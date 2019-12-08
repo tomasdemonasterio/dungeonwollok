@@ -1,0 +1,5 @@
+import DungeonWollok.*
+
+program juego {
+	juego.iniciar()
+}
