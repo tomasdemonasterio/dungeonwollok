@@ -46,7 +46,7 @@ object juego {
 	}
 	
 	method gameOver(){
-		game.clear()
+	game.clear()
 		game.addVisual(gameOver)
 	}
 	
@@ -65,19 +65,26 @@ object juego {
 	}
 	
 	method eventos() {
-		game.whenCollideDo(boss, {unObjeto => if(unObjeto.esJugador()) unObjeto.lucharContra(boss)})
-		game.whenCollideDo(fire1, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
-		game.whenCollideDo(fire2, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
-		game.whenCollideDo(fire3, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
-		game.whenCollideDo(fire4, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
-		game.onTick(90, "animar", {fire1.animar()})
-		game.onTick(90, "animar", {fire2.animar()})
-		game.onTick(90, "animar", {fire3.animar()})
-		game.onTick(90, "animar", {fire4.animar()})
-		game.onTick(500, "movimiento", {fire1.move()})
-		game.onTick(300, "movimiento", {fire2.move()})
-		game.onTick(700, "movimiento", {fire3.move()})
-		game.onTick(500, "movimiento", {fire4.move()})
+		var fires = [fire1,fire2,fire3,fire4]
+		game.whenCollideDo(boss, {unObjeto => unObjeto.lucharContra(boss)})
+		
+//		game.whenCollideDo(fire2, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
+//		game.whenCollideDo(fire3, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
+//		game.whenCollideDo(fire4, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
+		
+		fires.forEach{fire => 
+			game.whenCollideDo(fire, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
+			game.onTick(90, "animar", {fire.animar()})
+			game.onTick(fire.velocidad(), "movimiento", {fire.move()})
+			
+			}
+//		game.onTick(90, "animar", {fire2.animar()})
+//		game.onTick(90, "animar", {fire3.animar()})
+//		game.onTick(90, "animar", {fire4.animar()})
+//		game.onTick(500, "movimiento", {fire1.move()})
+//		game.onTick(300, "movimiento", {fire2.move()})
+//		game.onTick(700, "movimiento", {fire3.move()})
+//		game.onTick(500, "movimiento", {fire4.move()})
 		game.say(jugador, "Estoy listo!")
 	}
 	
@@ -149,40 +156,47 @@ object mapa {
 
 class Visual {
 	var property position = game.at(0,0)
-	var property image = ""
-	var property imageGIF = ""
+	var property image 
+		method esAtravesable() = false
+	method serAbiertoPor(x) {}	
+}
+
+class VisualAnima inherits Visual{
 	var property posicionAnimacion = 1
 	var property cantidadFrames = 1
 	
 	method animar() {
 		if(posicionAnimacion != cantidadFrames){
-			image = imageGIF+posicionAnimacion+".png"
 			posicionAnimacion += 1
 		}
 		else{
-			image = imageGIF+posicionAnimacion+".png"
 			posicionAnimacion = 1
 		}
 	}
+	override method image(){
+		return image+posicionAnimacion+".png"
+	}
+	
+
+	
 }
 
+
 class Elemento inherits Visual {
-	method esAtravesable() = false
-	method esJugador() = false
-	method esCofre() = false
+
+//	method esJugador() = false
+//	method esCofre() = false
 }
 
 object jugador inherits Elemento(position = game.at(1,9), image = "character.png"){
 	var property equipamiento = []
 	
-	override method esJugador() = true
+//	override method esJugador() = true
 	method poderDeCombate() = equipamiento.sum{unObjeto => unObjeto.poder()}
 	method abrirCofre() {
-		if(game.colliders(self).any{unObjeto => unObjeto.esCofre()})
-			self.buscarCofre(game.colliders(self)).serAbiertoPor(self)
+		game.colliders(self).forEach{ unObjeto => unObjeto.serAbiertoPor(self)}
 	}
-	
-	method buscarCofre(objetos) = objetos.find{unObjeto => unObjeto.esCofre()}
+	//method buscarCofre(objetos) = objetos.find{unObjeto => unObjeto.esCofre()}
 	
 	method recibirItem(item) {
 		equipamiento.add(item)
@@ -210,7 +224,7 @@ object jugador inherits Elemento(position = game.at(1,9), image = "character.png
   
 }
 
-class Enemigo inherits Elemento{
+class Enemigo inherits VisualAnima{
 	var property retornar = false
 	
 	method patrullarADerecha(inicio, destino) {
@@ -267,30 +281,34 @@ class Enemigo inherits Elemento{
 }
 
 class Fire inherits Enemigo {
+	var property velocidad
+	var property positionDestino
+	
 	override method esAtravesable() = true
-}
-
-object fire1 inherits Fire(position = game.at(1,7), cantidadFrames = 10, imageGIF = "fire/fire") {
 	method move() {
-		self.patrullarADerecha(game.at(1,7), game.at(6,7))
+		self.patrullarADerecha(position,positionDestino )
 	}
 }
 
-object fire2 inherits Fire(position = game.at(9,5), cantidadFrames = 10, imageGIF = "fire/fire") {
-	method move() {
-		self.patrullarAIzquierda(game.at(9,5), game.at(4,5))
+const fire1 = new Fire(position = game.at(1,7), positionDestino = game.at(6,7), cantidadFrames = 10, image = "fire/fire", velocidad = 300) 
+const fire3 = new Fire(position = game.at(1,1), positionDestino = game.at(1,7), cantidadFrames = 10, image = "fire/fire",velocidad = 500) 
+
+const fire2 = new FireIzq(position = game.at(9,5), positionDestino = game.at(9,6), cantidadFrames = 10, image = "fire/fire",velocidad = 700) 
+//const fire5 = new FireIzq(position = game.at(9,5), cantidadFrames = 10, image = "fire/fire") 
+
+const fire4 = fire1
+//(position = game.at(9,7), cantidadFrames = 10, imageGIF = "fire/fire") {
+
+class FireIzq inherits Fire{
+	override method move() {
+		self.patrullarAIzquierda(position, positionDestino)
 	}
 }
 
-object fire3 inherits Fire(position = game.at(1,1), cantidadFrames = 10, imageGIF = "fire/fire") {
-	method move() {
-		self.patrullarADerecha(game.at(1,1), game.at(6,1))
-	}
-}
-
-object fire4 inherits Fire(position = game.at(9,7), cantidadFrames = 10, imageGIF = "fire/fire") {
-	method move() {
-		self.ciclo(game.at(9,7), game.at(8,8), game.at(9,8))
+class FireCiclo inherits Fire{
+//    var tercerPos = 
+	override method move() {
+		self.ciclo(position, game.at(8,8), game.at(9,8))
 	}
 }
 
@@ -309,10 +327,10 @@ class Cofre inherits Elemento {
 	var property abierto = false
 	var property items = [espadaOxidada, espadaAfilada, escudo, yelmo, anilloDePoder, hacha]
 	
-	override method esCofre() = true
+//	override method esCofre() = true
 	override method esAtravesable() = true
 	
-	method serAbiertoPor(alguien) {
+	override method serAbiertoPor(alguien) {
 		if(!abierto){
 			abierto = true
 			image = "chest-open.png"
