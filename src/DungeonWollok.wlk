@@ -7,29 +7,41 @@ const yelmo = new Item(poder = 30, nombre = "Yelmo")
 const anilloDePoder = new Item(poder = 1000, nombre = "Anillo de Poder")
 const hacha = new Item(poder = 20, nombre = "Hacha")
 
-const muro1 = new Elemento(position = game.at(6,4), image = "wall.png")
-const muro2 = new Elemento(position = game.at(6,3), image = "wall.png")
-const muro3 = new Elemento(position = game.at(6,2), image = "wall.png")
-const muro4 = new Elemento(position = game.at(5,2), image = "wall.png")
-const muro5 = new Elemento(position = game.at(4,2), image = "wall.png")
-const muro6 = new Elemento(position = game.at(3,2), image = "wall.png")
-const muro7 = new Elemento(position = game.at(3,3), image = "wall.png")
-const muro8 = new Elemento(position = game.at(3,4), image = "wall.png")
-const muro9 = new Elemento(position = game.at(3,5), image = "wall.png")
-const muro10 = new Elemento(position = game.at(2,5), image = "wall.png")
-const muro11 = new Elemento(position = game.at(1,5), image = "wall.png")
-const muro12 = new Elemento(position = game.at(7,8), image = "wall.png")
-const muro13 = new Elemento(position = game.at(9,6), image = "wall.png")
-const muro14 = new Elemento(position = game.at(8,6), image = "wall.png")
-const muro15 = new Elemento(position = game.at(7,6), image = "wall.png")
-const muro16 = new Elemento(position = game.at(7,7), image = "wall.png")
-const muro17 = new Elemento(position = game.at(3,6), image = "wall.png")
-const muro18 = new Elemento(position = game.at(3,8), image = "wall.png")
-const muro19 = new Elemento(position = game.at(3,9), image = "wall.png")
+const muros = [muro1, muro2, muro3, muro4, muro5, muro6, muro7, muro8, muro9, muro10, muro11, muro12, muro13, muro14, muro15, muro16, muro17, muro18, muro19]
+const muro1 = new Visual(position = game.at(6,4), image = "wall.png")
+const muro2 = new Visual(position = game.at(6,3), image = "wall.png")
+const muro3 = new Visual(position = game.at(6,2), image = "wall.png")
+const muro4 = new Visual(position = game.at(5,2), image = "wall.png")
+const muro5 = new Visual(position = game.at(4,2), image = "wall.png")
+const muro6 = new Visual(position = game.at(3,2), image = "wall.png")
+const muro7 = new Visual(position = game.at(3,3), image = "wall.png")
+const muro8 = new Visual(position = game.at(3,4), image = "wall.png")
+const muro9 = new Visual(position = game.at(3,5), image = "wall.png")
+const muro10 = new Visual(position = game.at(2,5), image = "wall.png")
+const muro11 = new Visual(position = game.at(1,5), image = "wall.png")
+const muro12 = new Visual(position = game.at(7,8), image = "wall.png")
+const muro13 = new Visual(position = game.at(9,6), image = "wall.png")
+const muro14 = new Visual(position = game.at(8,6), image = "wall.png")
+const muro15 = new Visual(position = game.at(7,6), image = "wall.png")
+const muro16 = new Visual(position = game.at(7,7), image = "wall.png")
+const muro17 = new Visual(position = game.at(3,6), image = "wall.png")
+const muro18 = new Visual(position = game.at(3,8), image = "wall.png")
+const muro19 = new Visual(position = game.at(3,9), image = "wall.png")
 
 const victoria = new Visual(position = game.at(2,5), image = "victory.png")
 const gameOver = new Visual(position = game.at(2,5), image = "gameover.png")
 
+const fires = [fire1, fire2, fire3, fire4]
+const fire1 = new Fire(position = game.at(1,7), positionInicio = game.at(1,7), positionDestino = game.at(6,7), cantidadFrames = 10, image = "fire/fire", velocidad = 300) 
+const fire3 = new Fire(position = game.at(1,1), positionInicio = game.at(1,1), positionDestino = game.at(6,1), cantidadFrames = 10, image = "fire/fire",velocidad = 500) 
+const fire2 = new FireIzq(position = game.at(9,5), positionInicio = game.at(9,5), positionDestino = game.at(4,5), cantidadFrames = 10, image = "fire/fire",velocidad = 700) 
+const fire4 = new FireCiclo(position = game.at(9,7), positionInicio = game.at(9,7), tercerPos = game.at(8,8), positionDestino = game.at(9,8), cantidadFrames = 10, image = "fire/fire", velocidad = 500)
+
+const cofres = [cofre1, cofre2, cofre3, cofre4]
+const cofre1 = new Cofre(position = game.at(5,3), image = "chest-closed.png")
+const cofre2 = new Cofre(position = game.at(2,6), image = "chest-closed.png")
+const cofre3 = new Cofre(position = game.at(8,7), image = "chest-closed.png")
+const cofre4 = new Cofre(position = game.at(1,3), image = "chest-closed.png")
 
 object juego {
 	var property width = 11
@@ -65,26 +77,13 @@ object juego {
 	}
 	
 	method eventos() {
-		var fires = [fire1,fire2,fire3,fire4]
 		game.whenCollideDo(boss, {unObjeto => unObjeto.lucharContra(boss)})
-		
-//		game.whenCollideDo(fire2, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
-//		game.whenCollideDo(fire3, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
-//		game.whenCollideDo(fire4, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
-		
 		fires.forEach{fire => 
 			game.whenCollideDo(fire, {unObjeto => if(unObjeto.esJugador()) self.gameOver()})
 			game.onTick(90, "animar", {fire.animar()})
 			game.onTick(fire.velocidad(), "movimiento", {fire.move()})
 			
 			}
-//		game.onTick(90, "animar", {fire2.animar()})
-//		game.onTick(90, "animar", {fire3.animar()})
-//		game.onTick(90, "animar", {fire4.animar()})
-//		game.onTick(500, "movimiento", {fire1.move()})
-//		game.onTick(300, "movimiento", {fire2.move()})
-//		game.onTick(700, "movimiento", {fire3.move()})
-//		game.onTick(500, "movimiento", {fire4.move()})
 		game.say(jugador, "Estoy listo!")
 	}
 	
@@ -106,36 +105,12 @@ object mapa {
 	method generarElementos() {
 		game.addVisual(jugador)
 		game.addVisual(boss)
-		game.addVisual(fire1)
-		game.addVisual(fire2)
-		game.addVisual(fire3)
-		game.addVisual(fire4)
-		game.addVisual(cofre1)
-		game.addVisual(cofre2)
-		game.addVisual(cofre3)
-		game.addVisual(cofre4)
+		fires.forEach{unObjeto => game.addVisual(unObjeto)}
+		cofres.forEach{unObjeto => game.addVisual(unObjeto)}
 	}
 	
 	method generarMuros() {
-		game.addVisual(muro1)
-		game.addVisual(muro2)
-		game.addVisual(muro3)
-		game.addVisual(muro4)
-		game.addVisual(muro5)
-		game.addVisual(muro6)
-		game.addVisual(muro7)
-		game.addVisual(muro8)
-		game.addVisual(muro9)
-		game.addVisual(muro10)
-		game.addVisual(muro11)
-		game.addVisual(muro12)
-		game.addVisual(muro13)
-		game.addVisual(muro14)
-		game.addVisual(muro15)
-		game.addVisual(muro16)
-		game.addVisual(muro17)
-		game.addVisual(muro18)
-		game.addVisual(muro19)
+		muros.forEach{unObjeto => game.addVisual(unObjeto)}
 	}
 	
 	method generarLimites() {
@@ -143,13 +118,13 @@ object mapa {
    		const alto = game.height() - 1
    		const paredes = []
 		
-   		(0 .. ancho).forEach{num => paredes.add(new Elemento(position = game.at(num, alto), image = "border.png"))}
-   		(0 .. ancho).forEach{num => paredes.add(new Elemento(position = game.at(num, 0), image = "border.png"))}
-   		(0 .. alto).forEach{ num => paredes.add(new Elemento(position = game.at(ancho, num), image = "border.png"))}
-   		(0 .. alto).forEach{ num => paredes.add(new Elemento(position = game.at(0, num), image = "border.png"))}
+   		(0 .. ancho).forEach{num => paredes.add(new Visual(position = game.at(num, alto), image = "border.png"))}
+   		(0 .. ancho).forEach{num => paredes.add(new Visual(position = game.at(num, 0), image = "border.png"))}
+   		(0 .. alto).forEach{ num => paredes.add(new Visual(position = game.at(ancho, num), image = "border.png"))}
+   		(0 .. alto).forEach{ num => paredes.add(new Visual(position = game.at(0, num), image = "border.png"))}
     
    		paredes.forEach {pared => game.addVisual(pared)}
-}
+   		}
 }
 
 
@@ -157,8 +132,9 @@ object mapa {
 class Visual {
 	var property position = game.at(0,0)
 	var property image 
-		method esAtravesable() = false
+	method esAtravesable() = false
 	method serAbiertoPor(x) {}	
+	method esJugador() = false
 }
 
 class VisualAnima inherits Visual{
@@ -176,28 +152,16 @@ class VisualAnima inherits Visual{
 	override method image(){
 		return image+posicionAnimacion+".png"
 	}
-	
-
-	
 }
 
-
-class Elemento inherits Visual {
-
-//	method esJugador() = false
-//	method esCofre() = false
-}
-
-object jugador inherits Elemento(position = game.at(1,9), image = "character.png"){
+object jugador inherits Visual(position = game.at(1,9), image = "character.png"){
 	var property equipamiento = []
 	
-//	override method esJugador() = true
+	override method esJugador() = true
 	method poderDeCombate() = equipamiento.sum{unObjeto => unObjeto.poder()}
 	method abrirCofre() {
-		game.colliders(self).forEach{ unObjeto => unObjeto.serAbiertoPor(self)}
-	}
-	//method buscarCofre(objetos) = objetos.find{unObjeto => unObjeto.esCofre()}
-	
+		game.colliders(self).forEach{unObjeto => unObjeto.serAbiertoPor(self)}
+	}	
 	method recibirItem(item) {
 		equipamiento.add(item)
 		game.say(self, "Obtuve " + item.nombre() + " con " + item.poder() + " de poder!")
@@ -226,6 +190,7 @@ object jugador inherits Elemento(position = game.at(1,9), image = "character.png
 
 class Enemigo inherits VisualAnima{
 	var property retornar = false
+	var property velocidad = 0
 	
 	method patrullarADerecha(inicio, destino) {
 		if((position == destino))
@@ -281,40 +246,32 @@ class Enemigo inherits VisualAnima{
 }
 
 class Fire inherits Enemigo {
-	var property velocidad
 	var property positionDestino
+	var property positionInicio
 	
 	override method esAtravesable() = true
 	method move() {
-		self.patrullarADerecha(position,positionDestino )
+		self.patrullarADerecha(positionInicio, positionDestino)
 	}
 }
 
-const fire1 = new Fire(position = game.at(1,7), positionDestino = game.at(6,7), cantidadFrames = 10, image = "fire/fire", velocidad = 300) 
-const fire3 = new Fire(position = game.at(1,1), positionDestino = game.at(1,7), cantidadFrames = 10, image = "fire/fire",velocidad = 500) 
-
-const fire2 = new FireIzq(position = game.at(9,5), positionDestino = game.at(9,6), cantidadFrames = 10, image = "fire/fire",velocidad = 700) 
-//const fire5 = new FireIzq(position = game.at(9,5), cantidadFrames = 10, image = "fire/fire") 
-
-const fire4 = fire1
-//(position = game.at(9,7), cantidadFrames = 10, imageGIF = "fire/fire") {
-
 class FireIzq inherits Fire{
 	override method move() {
-		self.patrullarAIzquierda(position, positionDestino)
+		self.patrullarAIzquierda(positionInicio, positionDestino)
 	}
 }
 
 class FireCiclo inherits Fire{
-//    var tercerPos = 
+    var tercerPos  
 	override method move() {
-		self.ciclo(position, game.at(8,8), game.at(9,8))
+		self.ciclo(positionInicio, game.at(8,8), tercerPos)
 	}
 }
 
 object boss inherits Enemigo(position = game.at(5,9), image = "boss.png") {
 	var property poderDeCombate = 40
 	
+	override method image() = image
 	override method esAtravesable() = true
 	method morir() {
 		juego.victoria()
@@ -323,11 +280,10 @@ object boss inherits Enemigo(position = game.at(5,9), image = "boss.png") {
 	}
 }
 
-class Cofre inherits Elemento {
+class Cofre inherits Visual {
 	var property abierto = false
 	var property items = [espadaOxidada, espadaAfilada, escudo, yelmo, anilloDePoder, hacha]
 	
-//	override method esCofre() = true
 	override method esAtravesable() = true
 	
 	override method serAbiertoPor(alguien) {
@@ -344,15 +300,6 @@ class Cofre inherits Elemento {
 	method entregarItemA(alguien) {
 		alguien.recibirItem(items.anyOne())
 	}
-}
-
-object cofre1 inherits Cofre(position = game.at(5,3), image = "chest-closed.png"){
-}
-object cofre2 inherits Cofre(position = game.at(2,6), image = "chest-closed.png"){
-}
-object cofre3 inherits Cofre(position = game.at(8,7), image = "chest-closed.png"){
-}
-object cofre4 inherits Cofre(position = game.at(1,3), image = "chest-closed.png"){
 }
 
 class Item {
